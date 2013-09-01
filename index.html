@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/datetimepicker.css">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+
+    <title>计算器</title>
+</head>
+
+<body>
+    <div class="navbar navbar-default navbar-static-top">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">计算器</a>
+        </div>
+    </div>
+
+    <div id="app">
+        <div id="records" class="col-lg-9">
+            <div class="list-group">
+                <div class="list-group-item">
+                    <table id="records" class="table">
+                        <thead>
+                            <tr>
+                                <th>种类</th>
+                                <th>名称</th>
+                                <th>负责人</th>
+                                <th>数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td>款</td>
+                            <td>水款</td>
+                            <td>某某</td>
+                            <td>3 桶</td>
+                            </tr>
+                            <tr>
+                            <td>票</td>
+                            <td>矿物质水</td>
+                            <td>某某某</td>
+                            <td>30 元</td>
+                            </tr>
+                            <tr>
+                            <td>3</td>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button id="add-record" type="button" class="btn btn-default btn-lg btn-block"><span class="glyphicon glyphicon-plus"></span> 添加新纪录</button>
+            </div>
+        </div>
+    </div>
+<script data-main="js/main" src="js/require.js"></script>
+</body>
+</html>

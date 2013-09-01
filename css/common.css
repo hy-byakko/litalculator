@@ -1,0 +1,12 @@
+body {
+    font-family: 'Courier New', Courier, 微软雅黑, 黑体, monospace;
+}
+
+#records {
+	margin-bottom: -10px;
+}
+
+#records tbody td:hover {
+	background-color: #ebebeb;
+	border-color: #adadad;
+}
