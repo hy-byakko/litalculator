@@ -2,12 +2,14 @@
 'use strict';
 require.config({
   paths: {
-    jquery: 'lib/jquery-2.0.3.min',
-    underscore: 'lib/underscore-min',
+    jquery: 'lib/jquery-2.0.3',
+    underscore: 'lib/underscore',
     backbone: 'lib/backbone-min',
     bootstrap: 'lib/bootstrap.min',
     text: 'lib/text',
-    datetimepicker: 'lib/bootstrap-datetimepicker.min'
+    datetimepicker: 'lib/bootstrap-datetimepicker.min',
+    store: 'lib/backbone.localStorage-min',
+    moment: "lib/moment.min"
   },
   shim: {
     underscore: {
@@ -18,10 +20,11 @@ require.config({
       exports: 'Backbone'
     },
     bootstrap: ['jquery'],
-    datetimepicker: ['jquery']
+    datetimepicker: ['jquery'],
+    store: ['backbone']
   }
 });
 
-require(['backbone', 'views/app'], function(Backbone, appView) {
+require(['jquery', 'backbone', 'views/app'], function($, Backbone, appView) {
   return new appView;
 });
