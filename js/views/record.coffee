@@ -11,8 +11,7 @@ define [
 
 		events:
 			'click td': 'switchToEdit'
-			'mouseup select': 'editEnd'
-			'blur select': 'cleanEditor'
+			'blur select': 'editEnd'
 			'blur input': 'editEnd'
 
 		indexBarTemplate: _.template "

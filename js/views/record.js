@@ -5,8 +5,7 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
     tagName: 'tr',
     events: {
       'click td': 'switchToEdit',
-      'mouseup select': 'editEnd',
-      'blur select': 'cleanEditor',
+      'blur select': 'editEnd',
       'blur input': 'editEnd'
     },
     indexBarTemplate: _.template("<td data-prop='category'><%= model.categoryName() || '-' %></td><td data-prop='detail'><%= model.detailName() || '-'  %></td><td data-prop='worker'><%= model.workerName() || '-'  %></td><td data-prop='num'><%= model.get('num') || '-' %> <%= model.get('category') == 1 ? '张' : '元' %></td>", void 0, {

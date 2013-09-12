@@ -1,8 +1,8 @@
 'use strict'
 require.config
 	paths:
-		jquery: 'lib/jquery-2.0.3'
-		underscore: 'lib/underscore'
+		jquery: 'lib/jquery-2.0.3.min'
+		underscore: 'lib/underscore-min'
 		backbone: 'lib/backbone-min'
 		bootstrap: 'lib/bootstrap.min'
 		text: 'lib/text'
