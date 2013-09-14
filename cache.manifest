@@ -1,0 +1,50 @@
+CACHE MANIFEST
+# Generated at 2013-09-14 12:22:51 +0800
+
+CACHE:
+/css/bootstrap/css/bootstrap.css
+/css/bootstrap/css/bootstrap-theme.css
+/css/bootstrap/css/datetimepicker.css
+/css/bootstrap/css/bootstrap-theme.min.css
+/css/bootstrap/css/bootstrap.min.css
+/css/common.css
+/index.html
+/js/require.js
+/js/views/app.js
+/js/views/index.js
+/js/views/record.js
+/js/lib/bootstrap-datetimepicker.min.js
+/js/lib/jquery.indexeddb.js
+/js/lib/locales/bootstrap-datetimepicker.zh-CN.js
+/js/lib/bootstrap.js
+/js/lib/built.js
+/js/lib/underscore-min.js
+/js/lib/bootstrap.min.js
+/js/lib/jquery-throttle.min.js
+/js/lib/backbone-min.js
+/js/lib/backbone.js
+/js/lib/text.js
+/js/lib/bootstrap-datetimepicker.js
+/js/lib/backbone.localStorage-min.js
+/js/lib/jquery-2.0.3.js
+/js/lib/backbone.localStorage.js
+/js/lib/jquery-2.0.3.min.js
+/js/lib/moment.min.js
+/js/lib/jquery-throttle.js
+/js/lib/jquery.indexeddb.min.js
+/js/lib/underscore.js
+/js/build.js
+/js/models/record.js
+/js/main.js
+/js/collections/records.js
+/js/common.js
+/css/bootstrap/fonts/glyphicons-halflings-regular.svg
+/css/bootstrap/fonts/glyphicons-halflings-regular.ttf
+/css/bootstrap/fonts/glyphicons-halflings-regular.woff
+
+FALLBACK:
+# For example:
+# / /offline.html
+
+NETWORK:
+*
