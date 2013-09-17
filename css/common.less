@@ -7,7 +7,7 @@ body {
 
 #records {
 	margin-bottom: -10px;
-	tbody td:hover {
+	tbody td:hover.editable {
 		background-color: #ebebeb;
 		border-color: #adadad;
 	}
@@ -23,5 +23,11 @@ body {
 	}
 	th {
 		width: 200px;
+	}
+	th:last-of-type {
+		width: 30px;
+	}
+	.close {
+		font-size: 24px;
 	}
 }

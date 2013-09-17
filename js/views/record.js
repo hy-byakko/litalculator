@@ -4,11 +4,22 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
   return Backbone.View.extend({
     tagName: 'tr',
     events: {
-      'click td': 'switchToEdit',
+      'click td.editable': 'switchToEdit',
       'blur select': 'editEnd',
-      'blur input': 'editEnd'
+      'blur input': 'editEnd',
+      'click button.close': 'removeRecord'
     },
-    indexBarTemplate: _.template("<td data-prop='category'><%= model.categoryName() || '-' %></td><td data-prop='detail'><%= model.detailName() || '-'  %></td><td data-prop='worker'><%= model.workerName() || '-'  %></td><td data-prop='num'><%= model.get('num') || '-' %> <%= model.get('category') == 1 ? '张' : '元' %></td>", void 0, {
+    initialize: function() {
+      this.listenTo(this.model, 'sync', this.render);
+      return this.listenTo(this.model, 'destroy', this.remove);
+    },
+    indexBarTemplate: _.template('\
+<td class="editable" data-prop="category"><%= model.categoryName() || "-" %></td>\
+<td <% if(model.detailEditable()) { %>class="editable"<% } %> data-prop="detail"><%= model.detailName() || "-"  %></td>\
+<td class="editable" data-prop="worker"><%= model.workerName() || "-"  %></td>\
+<td class="editable" data-prop="num"><%= model.get("num") || "-" %> <%= model.get("category") == 1 ? "张" : "元" %></td>\
+<td><button type="button" class="close">&times;</button></td>\
+', void 0, {
       variable: 'model'
     }),
     render: function() {
@@ -47,14 +58,10 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       $wrap = $element.parent('td');
       newValue = _.isNaN(parseInt($element.val())) ? void 0 : parseInt($element.val());
       this.model.set($wrap.data("prop"), newValue);
-      this.model.save();
-      return this.cleanEditor.call(this, arguments);
+      return this.model.save();
     },
-    cleanEditor: function() {
-      var $element, $wrap;
-      $element = $(arguments[0].target);
-      $wrap = $element.parent('td').removeClass('editor-wrap');
-      return this.render();
+    removeRecord: function() {
+      return this.model.destroy();
     }
   });
 });

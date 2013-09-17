@@ -8,9 +8,9 @@ define [
 	'use strict'
 
 	Backbone.Model.extend
-		defaults:
+		defaults: ->
 			worker: 0
-			createTime: new Date
+			createTime: Common.targetDate.date
 
 		categoryName: ->
 			(Common.getCategory(@get('category')) or {}).text
@@ -18,9 +18,9 @@ define [
 			(Common.getDetail(@get('category'), @get('detail')) or {}).text
 		workerName: ->
 			(Common.getWorker(@get('worker')) or {}).text
-
+		detailEditable: ->
+			!_.isUndefined @get("category")
 		isValid: ->
-			@get('num') and (Common.getDetail(@get('category'), @get('detail')).value != undefined)
-
+			@get('num') and !_.isUndefined(Common.getDetail(@get('category'), @get('detail')))
 		isActived: ->
-			moment(@get('createTime')).startOf('day').isSame(moment().startOf('day'))
+			moment(@get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'))

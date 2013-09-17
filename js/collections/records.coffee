@@ -3,10 +3,16 @@ define [
 	'backbone'
 	'models/record'
 	'store'
-], (_, Backbone, Record, Store) ->
+	'common'
+], (_, Backbone, Record, Store, Common) ->
 	'use strict'
 
 	Backbone.Collection.extend
 		model: Record
 
 		localStorage: new Store('Records')
+
+		initialize: ->
+			@listenTo Common.targetDate, 'change', =>
+				@trigger('filter')
+			@

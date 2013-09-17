@@ -1,6 +1,8 @@
 define [
 	'underscore'
-], (_) ->
+	'backbone'
+	'moment'
+], (_, Backbone, moment) ->
 	'use strict'
 
 	selectExpend = (element) ->
@@ -100,6 +102,15 @@ define [
 		}
 	]
 
+	targetDate = _.extend
+		$el: $('#target-date').on('change', ->
+			return unless targetDate.$el.val()
+			targetDate.date = moment(targetDate.$el.val()).toDate()
+			targetDate.trigger('change', targetDate.date)
+		).val(moment().format("YYYY-MM-DD"))
+		,
+		Backbone.Events
+
 	new class
 		getCategories: =>
 			metaData.categories
@@ -115,6 +126,5 @@ define [
 			metaData.workers
 		getWorker: (value) =>
 			_.findWhere metaData.workers, value: value
+		targetDate: targetDate
 		selectExpend: selectExpend
-
-

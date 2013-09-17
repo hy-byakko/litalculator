@@ -10,15 +10,22 @@ define [
 		tagName:  'tr'
 
 		events:
-			'click td': 'switchToEdit'
+			'click td.editable': 'switchToEdit'
 			'blur select': 'editEnd'
 			'blur input': 'editEnd'
+			'click button.close': 'removeRecord'
 
-		indexBarTemplate: _.template "
-<td data-prop='category'><%= model.categoryName() || '-' %></td>
-<td data-prop='detail'><%= model.detailName() || '-'  %></td>
-<td data-prop='worker'><%= model.workerName() || '-'  %></td>
-<td data-prop='num'><%= model.get('num') || '-' %> <%= model.get('category') == 1 ? '张' : '元' %></td>", undefined, variable: 'model'
+		initialize: ->
+			@listenTo @model, 'sync', @render
+			@listenTo @model, 'destroy', @remove
+
+		indexBarTemplate: _.template '
+<td class="editable" data-prop="category"><%= model.categoryName() || "-" %></td>
+<td <% if(model.detailEditable()) { %>class="editable"<% } %> data-prop="detail"><%= model.detailName() || "-"  %></td>
+<td class="editable" data-prop="worker"><%= model.workerName() || "-"  %></td>
+<td class="editable" data-prop="num"><%= model.get("num") || "-" %> <%= model.get("category") == 1 ? "张" : "元" %></td>
+<td><button type="button" class="close">&times;</button></td>
+', undefined, variable: 'model'
 
 		render: ->
 			@$el.html @indexBarTemplate @model
@@ -51,10 +58,8 @@ define [
 			$wrap = $element.parent('td')
 			newValue = if _.isNaN parseInt($element.val()) then undefined else parseInt($element.val())
 			@model.set $wrap.data("prop"), newValue
+			# Do not clean, just rerender it.
 			do @model.save
-			@cleanEditor.call @, arguments
 
-		cleanEditor: ->
-			$element = $(arguments[0].target)
-			$wrap = $element.parent('td').removeClass('editor-wrap')
-			do @render
+		removeRecord: ->
+			do @model.destroy

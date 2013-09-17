@@ -7,7 +7,6 @@ require.config({
     backbone: 'lib/backbone-min',
     bootstrap: 'lib/bootstrap.min',
     text: 'lib/text',
-    datetimepicker: 'lib/bootstrap-datetimepicker.min',
     store: 'lib/backbone.localStorage-min',
     moment: "lib/moment.min"
   },
@@ -20,7 +19,6 @@ require.config({
       exports: 'Backbone'
     },
     bootstrap: ['jquery'],
-    datetimepicker: ['jquery'],
     store: ['backbone']
   }
 });

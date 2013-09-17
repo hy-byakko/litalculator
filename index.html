@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh" manifest="cache.manifest">
+<html lang="zh">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/datetimepicker.css">
     <link rel="stylesheet" type="text/css" href="css/common.css">
 
     <title>计算器</title>
@@ -15,10 +14,22 @@
 <body>
     <div class="navbar navbar-default navbar-static-top">
         <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="#">计算器</a>
         </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <input id="target-date" type="date" class="form-control">
+                </div>
+            </form>
+        </div>
     </div>
-
     <div id="app">
         <div id="records" class="col-lg-9">
             <div class="list-group">
@@ -30,6 +41,7 @@
                                 <th>名称</th>
                                 <th>负责人</th>
                                 <th>数量</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,6 +61,6 @@
             </div>
         </div>
     </div>
-<script data-main="js/lib/built" src="js/require.js"></script>
+<script data-main="js/main" src="js/require.js"></script>
 </body>
 </html>

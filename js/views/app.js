@@ -21,12 +21,13 @@ define(['jquery', 'underscore', 'backbone', 'models/record', 'collections/record
       calculateWarp = _.debounce(this.calculateRender, 5, false);
       this.records.fetch();
       this.listenTo(this.records, 'add', this.renderOne);
-      this.listenTo(this.records, 'filter', this.render);
       this.listenTo(this.records, 'all', calculateWarp);
-      return this.records.trigger('filter');
+      this.listenTo(this.records, 'filter', this.render);
+      return Common.targetDate.$el.trigger('change');
     },
     render: function() {
       var _this = this;
+      this.$recordsBody.empty();
       this.records.chain().filter(function(record) {
         return record.isActived();
       }).each(function(record) {

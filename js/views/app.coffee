@@ -32,12 +32,13 @@ define [
 			do @records.fetch
 
 			@listenTo @records, 'add', @renderOne
-			@listenTo @records, 'filter', @render
 			@listenTo @records, 'all', calculateWarp
+			@listenTo @records, 'filter', @render
 
-			@records.trigger 'filter'
+			Common.targetDate.$el.trigger('change')
 
 		render: ->
+			do @$recordsBody.empty
 			@records.chain()
 			.filter (record) ->
 				record.isActived()

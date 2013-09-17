@@ -1,6 +1,8 @@
 body{font-family:'Courier New',Courier,'微软雅黑','黑体',monospace;font-size:17px}
-#records{margin-bottom:-10px}#records tbody td:hover{background-color:#ebebeb;border-color:#adadad}
+#records{margin-bottom:-10px}#records tbody td:hover.editable{background-color:#ebebeb;border-color:#adadad}
 #records .editor-wrap{padding:0}
 #records .fit-table{font-size:17px;height:40px}
 #records .strict-width{width:200px}
 #records th{width:200px}
+#records th:last-of-type{width:30px}
+#records .close{font-size:24px}

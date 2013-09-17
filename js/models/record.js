@@ -2,9 +2,11 @@
 define(['jquery', 'underscore', 'backbone', 'moment', 'common'], function($, _, Backbone, moment, Common) {
   'use strict';
   return Backbone.Model.extend({
-    defaults: {
-      worker: 0,
-      createTime: new Date
+    defaults: function() {
+      return {
+        worker: 0,
+        createTime: Common.targetDate.date
+      };
     },
     categoryName: function() {
       return (Common.getCategory(this.get('category')) || {}).text;
@@ -15,11 +17,14 @@ define(['jquery', 'underscore', 'backbone', 'moment', 'common'], function($, _, 
     workerName: function() {
       return (Common.getWorker(this.get('worker')) || {}).text;
     },
+    detailEditable: function() {
+      return !_.isUndefined(this.get("category"));
+    },
     isValid: function() {
-      return this.get('num') && (Common.getDetail(this.get('category'), this.get('detail')).value !== void 0);
+      return this.get('num') && !_.isUndefined(Common.getDetail(this.get('category'), this.get('detail')));
     },
     isActived: function() {
-      return moment(this.get('createTime')).startOf('day').isSame(moment().startOf('day'));
+      return moment(this.get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'));
     }
   });
 });
