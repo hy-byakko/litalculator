@@ -21,6 +21,22 @@ define [
 		detailEditable: ->
 			!_.isUndefined @get("category")
 		isValid: ->
-			@get('num') and !_.isUndefined(Common.getDetail(@get('category'), @get('detail')))
+			@getNum() and !_.isUndefined(Common.getDetail(@get('category'), @get('detail')))
 		isActived: ->
 			moment(@get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'))
+		setNum: (value) ->
+			if /^\d+$/.test value
+				@set('num', parseInt(value))
+			else
+				try
+					evalVal = eval value
+					if _.isNaN parseInt(evalVal)
+						@set('num', undefined)
+					else
+						@set('num', value)
+						@set('evalNum', evalVal)
+				catch e
+					console.log e
+		getNum: ->
+			unless _.isUndefined @get('num')
+				if _.isNumber @get('num') then @get('num') else @get('evalNum')

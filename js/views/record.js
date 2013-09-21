@@ -6,7 +6,7 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
     events: {
       'click td.editable': 'switchToEdit',
       'blur select': 'editEnd',
-      'blur input': 'editEnd',
+      'blur [data-prop="num"] input': 'numEdit',
       'click button.close': 'removeRecord'
     },
     initialize: function() {
@@ -58,6 +58,16 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       $wrap = $element.parent('td');
       newValue = _.isNaN(parseInt($element.val())) ? void 0 : parseInt($element.val());
       this.model.set($wrap.data("prop"), newValue);
+      return this.model.save();
+    },
+    numEdit: function() {
+      var $element, $wrap;
+      $element = $(arguments[0].target);
+      $wrap = $element.parent('td');
+      if ($wrap.data("prop") !== 'num') {
+        return;
+      }
+      this.model.setNum($element.val());
       return this.model.save();
     },
     removeRecord: function() {
