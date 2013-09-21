@@ -94,7 +94,7 @@ define [
 								], [
 									Common.getDetail(parseInt(category), parseInt(detail)).text
 									_.reduce records, (memo, record) ->
-										memo + record.get('num')
+										memo + record.getNum()
 									, 0
 								]
 							.value()
@@ -141,7 +141,7 @@ define [
 			if details then $(@selectBuilder data: details) else undefined
 
 		numberTemplate: _.template '
-<input type="number" class="form-control fit-table strict-width" autocomplete="off">
+<input type="text" class="form-control fit-table strict-width" autocomplete="off">
 ', undefined, variable: 'options'
 
 		numberBuilder: (options = {}) ->

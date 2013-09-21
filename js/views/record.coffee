@@ -12,7 +12,7 @@ define [
 		events:
 			'click td.editable': 'switchToEdit'
 			'blur select': 'editEnd'
-			'blur input': 'editEnd'
+			'blur [data-prop="num"] input': 'numEdit'
 			'click button.close': 'removeRecord'
 
 		initialize: ->
@@ -59,6 +59,13 @@ define [
 			newValue = if _.isNaN parseInt($element.val()) then undefined else parseInt($element.val())
 			@model.set $wrap.data("prop"), newValue
 			# Do not clean, just rerender it.
+			do @model.save
+
+		numEdit: ->
+			$element = $(arguments[0].target)
+			$wrap = $element.parent('td')
+			return if $wrap.data("prop") != 'num'
+			@model.setNum $element.val()
 			do @model.save
 
 		removeRecord: ->

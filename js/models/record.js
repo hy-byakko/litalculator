@@ -21,10 +21,38 @@ define(['jquery', 'underscore', 'backbone', 'moment', 'common'], function($, _, 
       return !_.isUndefined(this.get("category"));
     },
     isValid: function() {
-      return this.get('num') && !_.isUndefined(Common.getDetail(this.get('category'), this.get('detail')));
+      return this.getNum() && !_.isUndefined(Common.getDetail(this.get('category'), this.get('detail')));
     },
     isActived: function() {
       return moment(this.get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'));
+    },
+    setNum: function(value) {
+      var e, evalVal;
+      if (/^\d+$/.test(value)) {
+        return this.set('num', parseInt(value));
+      } else {
+        try {
+          evalVal = eval(value);
+          if (_.isNaN(parseInt(evalVal))) {
+            return this.set('num', void 0);
+          } else {
+            this.set('num', value);
+            return this.set('evalNum', evalVal);
+          }
+        } catch (_error) {
+          e = _error;
+          return console.log(e);
+        }
+      }
+    },
+    getNum: function() {
+      if (!_.isUndefined(this.get('num'))) {
+        if (_.isNumber(this.get('num'))) {
+          return this.get('num');
+        } else {
+          return this.get('evalNum');
+        }
+      }
     }
   });
 });

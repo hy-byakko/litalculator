@@ -71,7 +71,7 @@ define(['jquery', 'underscore', 'backbone', 'models/record', 'collections/record
               }).map(function(records, detail) {
                 return _.object(['name', 'num'], [
                   Common.getDetail(parseInt(category), parseInt(detail)).text, _.reduce(records, function(memo, record) {
-                    return memo + record.get('num');
+                    return memo + record.getNum();
                   }, 0)
                 ]);
               }).value()
@@ -122,7 +122,7 @@ define(['jquery', 'underscore', 'backbone', 'models/record', 'collections/record
       }
     },
     numberTemplate: _.template('\
-<input type="number" class="form-control fit-table strict-width" autocomplete="off">\
+<input type="text" class="form-control fit-table strict-width" autocomplete="off">\
 ', void 0, {
       variable: 'options'
     }),
