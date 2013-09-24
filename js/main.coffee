@@ -7,7 +7,8 @@ require.config
 		bootstrap: 'lib/bootstrap.min'
 		text: 'lib/text'
 		store: 'lib/backbone.localStorage-min'
-		moment: "lib/moment.min",
+		moment: 'lib/moment.min'
+		'jQuery.scrollUp': 'lib/jquery.scrollUp.min'
 	shim:
 		underscore:
 			exports: '_'
@@ -19,10 +20,17 @@ require.config
 			exports: 'Backbone'
 		bootstrap: ['jquery']
 		store: ['backbone']
+		'jQuery.scrollUp': ['jquery']
 
 require [
 	'jquery'
 	'backbone'
 	'views/app'
+	'bootstrap'
+	'jQuery.scrollUp'
 ], ($, Backbone, appView) ->
+	$.scrollUp
+		scrollDistance: 1
+		scrollImg: true
+
 	new appView

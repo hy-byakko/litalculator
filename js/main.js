@@ -8,7 +8,8 @@ require.config({
     bootstrap: 'lib/bootstrap.min',
     text: 'lib/text',
     store: 'lib/backbone.localStorage-min',
-    moment: "lib/moment.min"
+    moment: 'lib/moment.min',
+    'jQuery.scrollUp': 'lib/jquery.scrollUp.min'
   },
   shim: {
     underscore: {
@@ -19,10 +20,15 @@ require.config({
       exports: 'Backbone'
     },
     bootstrap: ['jquery'],
-    store: ['backbone']
+    store: ['backbone'],
+    'jQuery.scrollUp': ['jquery']
   }
 });
 
-require(['jquery', 'backbone', 'views/app'], function($, Backbone, appView) {
+require(['jquery', 'backbone', 'views/app', 'bootstrap', 'jQuery.scrollUp'], function($, Backbone, appView) {
+  $.scrollUp({
+    scrollDistance: 1,
+    scrollImg: true
+  });
   return new appView;
 });

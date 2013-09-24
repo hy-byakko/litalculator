@@ -84,6 +84,10 @@ define [
 					text: '压水器'
 					value: 4
 				}
+				{
+					text: '小水箱费'
+					value: 5
+				}
 			]
 		}
 	]
@@ -99,6 +103,9 @@ define [
 		}
 		{
 			text: '陆德其', value: 3
+		}
+		{
+			text: '陈国伟', value: 4
 		}
 	]
 
