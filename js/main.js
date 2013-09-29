@@ -9,7 +9,10 @@ require.config({
     text: 'lib/text',
     store: 'lib/backbone.localStorage-min',
     moment: 'lib/moment.min',
-    'jQuery.scrollUp': 'lib/jquery.scrollUp.min'
+    'jQuery.scrollUp': 'lib/jquery.scrollUp.min',
+    'jQuery.indexedDB': 'lib/jquery.indexeddb.min',
+    messenger: 'lib/messenger.min',
+    Dropbox: 'https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest'
   },
   shim: {
     underscore: {
@@ -21,14 +24,47 @@ require.config({
     },
     bootstrap: ['jquery'],
     store: ['backbone'],
-    'jQuery.scrollUp': ['jquery']
+    'jQuery.scrollUp': ['jquery'],
+    'jQuery.indexedDB': ['jquery'],
+    messenger: {
+      deps: ['jquery'],
+      exports: 'Messenger'
+    },
+    Dropbox: {
+      exports: 'Dropbox'
+    }
   }
 });
 
-require(['jquery', 'backbone', 'views/app', 'bootstrap', 'jQuery.scrollUp'], function($, Backbone, appView) {
+require(['jquery', 'backbone', 'views/app', 'messenger', 'bootstrap', 'jQuery.scrollUp'], function($, Backbone, appView, Messenger) {
+  var updateOnlineStatus;
   $.scrollUp({
     scrollDistance: 1,
     scrollImg: true
   });
+  Messenger.options = {
+    extraClasses: 'messenger-fixed messenger-on-top',
+    theme: 'air'
+  };
+  updateOnlineStatus = function() {
+    var options;
+    options = {
+      showCloseButton: true
+    };
+    if (arguments[0].type === 'online') {
+      $.extend(options, {
+        message: '上线状态',
+        type: 'info'
+      });
+    } else {
+      $.extend(options, {
+        message: '目前处于离线状态',
+        type: 'error'
+      });
+    }
+    return Messenger().post(options);
+  };
+  $(window).on('online', updateOnlineStatus);
+  $(window).on('offline', updateOnlineStatus);
   return new appView;
 });

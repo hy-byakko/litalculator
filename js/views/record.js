@@ -5,6 +5,7 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
     tagName: 'tr',
     events: {
       'click td.editable': 'switchToEdit',
+      'change select': 'editEnd',
       'blur select': 'editEnd',
       'blur [data-prop="num"] input': 'numEdit',
       'click button.close': 'removeRecord'

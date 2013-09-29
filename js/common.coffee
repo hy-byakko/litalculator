@@ -2,7 +2,9 @@ define [
 	'underscore'
 	'backbone'
 	'moment'
-], (_, Backbone, moment) ->
+	'Dropbox'
+	'jQuery.indexedDB'
+], (_, Backbone, moment, Dropbox) ->
 	'use strict'
 
 	selectExpend = (element) ->
@@ -10,7 +12,23 @@ define [
 		event.initMouseEvent('mousedown', true, true, window)
 		element.dispatchEvent(event)
 
-	metaData =
+	client = new Dropbox.Client key: 't35la3qyv5bvtry'
+	client.authDriver new Dropbox.AuthDriver.Popup
+	    receiverUrl: "http://localhost:4000/dropbox-oauth-receiver.html"
+	    rememberUser: true
+
+	client.authenticate
+		interactive: false
+	, (error) ->
+        alert('Authentication error: ' + error) if error
+
+	client.isAuthenticated()
+
+	datastoreManager = do client.getDatastoreManager
+	datastoreManager.openDefaultDatastore (error, datastore) ->
+	    alert('Error opening default datastore: ' + error) if error
+
+	defaultMetaData =
 	categories: [
 		{
 			text: '-', value: undefined
@@ -44,6 +62,10 @@ define [
 			text: '票', value: 1
 			details: [
 				{
+					text: '-'
+					value: undefined
+				}
+				{
 					text: '矿物质'
 					value: 0
 				}
@@ -64,6 +86,10 @@ define [
 		{
 			text: '销售款', value: 2
 			details: [
+				{
+					text: '-'
+					value: undefined
+				}
 				{
 					text: '饮水机[万爱]'
 					value: 0
@@ -108,6 +134,19 @@ define [
 			text: '陈国伟', value: 4
 		}
 	]
+	lastModify: new Date "Sat, 28 Sep 2013 15:22:33 GMT"
+
+	metaData = {}
+
+	metaStore = $.indexedDB('litalculator').objectStore('metaData', true)
+	metaStore.count().done (result) ->
+		if result == 0
+			metaStore.add(defaultMetaData).done (result) ->
+				metaData = result
+		else
+			metaStore.get(1).done (result) ->
+				console.log result
+				metaData = result
 
 	targetDate = _.extend
 		$el: $('#target-date').on('change', ->
@@ -120,9 +159,9 @@ define [
 
 	new class
 		getCategories: =>
-			metaData.categories
+			defaultMetaData.categories
 		getCategory: (value) =>
-			_.findWhere metaData.categories, value: value
+			_.findWhere defaultMetaData.categories, value: value
 		getDetails: (categoryValue) =>
 			(@getCategory(categoryValue) or {}).details
 		getDetail: (categoryValue, detailValue) =>
@@ -130,8 +169,8 @@ define [
 			return unless details
 			_.findWhere details, value: detailValue
 		getWorkers: =>
-			metaData.workers
+			defaultMetaData.workers
 		getWorker: (value) =>
-			_.findWhere metaData.workers, value: value
+			_.findWhere defaultMetaData.workers, value: value
 		targetDate: targetDate
 		selectExpend: selectExpend
