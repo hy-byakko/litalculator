@@ -33,8 +33,8 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       $element = $(arguments[0].target);
       switch ($element.data("prop")) {
         case "category":
-          $element.addClass('editor-wrap').empty().append(parent.$categorySelect);
-          return parent.$categorySelect.val(this.model.get('category')).focus();
+          $element.addClass('editor-wrap').empty().append(parent.getCategorySelect());
+          return parent.getCategorySelect().val(this.model.get('category')).focus();
         case "detail":
           detailSelect = parent.detailSelectBuilder(this.model.get('category'));
           if (!detailSelect) {
@@ -43,8 +43,8 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
           $element.addClass('editor-wrap').empty().append(detailSelect);
           return detailSelect.val(this.model.get('detail')).focus();
         case "worker":
-          $element.addClass('editor-wrap').empty().append(parent.$workerSelect);
-          return parent.$workerSelect.val(this.model.get('worker')).focus();
+          $element.addClass('editor-wrap').empty().append(parent.getWorkerSelect());
+          return parent.getWorkerSelect().val(this.model.get('worker')).focus();
         case "num":
           numInput = parent.numberBuilder({
             unit: this.model.get('category') === 1 ? '桶' : '元'
@@ -59,7 +59,7 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       $wrap = $element.parent('td');
       newValue = _.isNaN(parseInt($element.val())) ? void 0 : parseInt($element.val());
       this.model.set($wrap.data("prop"), newValue);
-      return this.model.save();
+      return this.model.collection.trigger('write');
     },
     numEdit: function() {
       var $element, $wrap;
@@ -69,10 +69,13 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
         return;
       }
       this.model.setNum($element.val());
-      return this.model.save();
+      return this.model.collection.trigger('write');
     },
     removeRecord: function() {
-      return this.model.destroy();
+      var collection;
+      collection = this.model.collection;
+      collection.remove(this.model);
+      return collection.trigger('write');
     }
   });
 });

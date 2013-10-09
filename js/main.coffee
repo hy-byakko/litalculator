@@ -11,7 +11,7 @@ require.config
 		'jQuery.scrollUp': 'lib/jquery.scrollUp.min'
 		'jQuery.indexedDB': 'lib/jquery.indexeddb.min'
 		messenger: 'lib/messenger.min'
-		Dropbox: 'https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest'
+		Dropbox: 'lib/dropbox-datastores-1.0.0'
 	shim:
 		underscore:
 			exports: '_'
@@ -38,7 +38,11 @@ require [
 	'messenger'
 	'bootstrap'
 	'jQuery.scrollUp'
+	'backbone.indexedDB'
 ], ($, Backbone, appView, Messenger) ->
+
+	Backbone.IndexedDB.DBName = 'litalculator'
+
 	$.scrollUp
 		scrollDistance: 1
 		scrollImg: true
@@ -58,8 +62,5 @@ require [
 				message: '目前处于离线状态'
 				type: 'error'
 		Messenger().post options
-
-	$(window).on 'online', updateOnlineStatus
-	$(window).on 'offline', updateOnlineStatus
 
 	new appView

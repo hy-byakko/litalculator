@@ -39,16 +39,16 @@ define [
 			$element = $(arguments[0].target)
 			switch $element.data "prop"
 				when "category"
-					$element.addClass('editor-wrap').empty().append(parent.$categorySelect)
-					do parent.$categorySelect.val(@model.get('category')).focus
+					$element.addClass('editor-wrap').empty().append(parent.getCategorySelect())
+					do parent.getCategorySelect().val(@model.get('category')).focus
 				when "detail"
 					detailSelect = parent.detailSelectBuilder(@model.get('category'))
 					return unless detailSelect
 					$element.addClass('editor-wrap').empty().append(detailSelect)
 					do detailSelect.val(@model.get('detail')).focus
 				when "worker"
-					$element.addClass('editor-wrap').empty().append(parent.$workerSelect)
-					do parent.$workerSelect.val(@model.get('worker')).focus
+					$element.addClass('editor-wrap').empty().append(parent.getWorkerSelect())
+					do parent.getWorkerSelect().val(@model.get('worker')).focus
 				when "num"
 					numInput = parent.numberBuilder(unit: if @model.get('category') == 1 then '桶' else '元')
 					$element.addClass('editor-wrap').empty().append(numInput)
@@ -60,14 +60,16 @@ define [
 			newValue = if _.isNaN parseInt($element.val()) then undefined else parseInt($element.val())
 			@model.set $wrap.data("prop"), newValue
 			# Do not clean, just rerender it.
-			do @model.save
+			@model.collection.trigger('write')
 
 		numEdit: ->
 			$element = $(arguments[0].target)
 			$wrap = $element.parent('td')
 			return if $wrap.data("prop") != 'num'
 			@model.setNum $element.val()
-			do @model.save
+			@model.collection.trigger('write')
 
 		removeRecord: ->
-			do @model.destroy
+			collection = @model.collection
+			collection.remove(@model)
+			collection.trigger('write')

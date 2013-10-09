@@ -3,10 +3,12 @@ define [
 	'underscore'
 	'backbone'
 	'models/record'
+	'models/recordcontainer'
 	'collections/records'
+	'collections/recordcontainers'
 	'views/record'
 	'common'
-], ($, _, Backbone, Record, Records, RecordView, Common) ->
+], ($, _, Backbone, Record, RecordContainer, Records, RecordContainers, RecordView, Common) ->
 	'use strict'
 
 	Backbone.View.extend
@@ -21,21 +23,29 @@ define [
 
 			@$resultBody = @$('#result ul.list-group')
 
-			@$categorySelect = $(@selectBuilder data: Common.getCategories())
-			@$workerSelect = $(@selectBuilder data: Common.getWorkers())
-
+			@recordContainers = new RecordContainers
 			@records = new Records
 
 			calculateWarp = _.debounce(@calculateRender, 5, false)
 
+			do @recordContainers.fetch
 			# Fetch before listen to prevent rendering
-			do @records.fetch
+			# do @records.fetch
 
 			@listenTo @records, 'add', @renderOne
 			@listenTo @records, 'all', calculateWarp
-			@listenTo @records, 'filter', @render
+			@listenTo @records, 'reset', @render
+			@listenTo @records, 'write', @recordsUpdate
+
+			@listenTo @recordContainers, 'sync', @recordsFetch
 
 			Common.targetDate.$el.trigger('change')
+
+		recordsFetch: ->
+			@records.reset(JSON.parse(@recordContainers.getContainer().get('content')))
+
+		recordsUpdate: ->
+			@recordContainers.getContainer().set('content', JSON.stringify(@records.toJSON())).set('lastModifyTime', (new Date).toString()).save()
 
 		render: ->
 			do @$recordsBody.empty
@@ -46,6 +56,14 @@ define [
 				@renderOne (record)
 			.value()
 			@
+
+		getCategorySelect: ->
+			return @$categorySelect if @$categorySelect
+			@$categorySelect = $(@selectBuilder data: Common.getCategories())
+
+		getWorkerSelect: ->
+			return @$workerSelect if @$workerSelect
+			@$workerSelect = $(@selectBuilder data: Common.getWorkers())
 
 		resultTemplate: _.template '
 <% _.each(result, function(worker) { %>

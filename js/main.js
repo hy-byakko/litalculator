@@ -12,7 +12,7 @@ require.config({
     'jQuery.scrollUp': 'lib/jquery.scrollUp.min',
     'jQuery.indexedDB': 'lib/jquery.indexeddb.min',
     messenger: 'lib/messenger.min',
-    Dropbox: 'https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest'
+    Dropbox: 'lib/dropbox-datastores-1.0.0'
   },
   shim: {
     underscore: {
@@ -36,8 +36,9 @@ require.config({
   }
 });
 
-require(['jquery', 'backbone', 'views/app', 'messenger', 'bootstrap', 'jQuery.scrollUp'], function($, Backbone, appView, Messenger) {
+require(['jquery', 'backbone', 'views/app', 'messenger', 'bootstrap', 'jQuery.scrollUp', 'backbone.indexedDB'], function($, Backbone, appView, Messenger) {
   var updateOnlineStatus;
+  Backbone.IndexedDB.DBName = 'litalculator';
   $.scrollUp({
     scrollDistance: 1,
     scrollImg: true
@@ -64,7 +65,5 @@ require(['jquery', 'backbone', 'views/app', 'messenger', 'bootstrap', 'jQuery.sc
     }
     return Messenger().post(options);
   };
-  $(window).on('online', updateOnlineStatus);
-  $(window).on('offline', updateOnlineStatus);
   return new appView;
 });

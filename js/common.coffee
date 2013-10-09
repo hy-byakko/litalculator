@@ -3,8 +3,9 @@ define [
 	'backbone'
 	'moment'
 	'Dropbox'
+	'eventmgr'
 	'jQuery.indexedDB'
-], (_, Backbone, moment, Dropbox) ->
+], (_, Backbone, moment, Dropbox, eventManager) ->
 	'use strict'
 
 	selectExpend = (element) ->
@@ -24,9 +25,9 @@ define [
 
 	client.isAuthenticated()
 
-	datastoreManager = do client.getDatastoreManager
-	datastoreManager.openDefaultDatastore (error, datastore) ->
-	    alert('Error opening default datastore: ' + error) if error
+	# datastoreManager = do client.getDatastoreManager
+	# datastoreManager.openDefaultDatastore (error, datastore) ->
+	#     alert('Error opening default datastore: ' + error) if error
 
 	defaultMetaData =
 	categories: [
@@ -143,10 +144,11 @@ define [
 		if result == 0
 			metaStore.add(defaultMetaData).done (result) ->
 				metaData = result
+				eventManager.trigger('metaready')
 		else
 			metaStore.get(1).done (result) ->
-				console.log result
 				metaData = result
+				eventManager.trigger('metaready')
 
 	targetDate = _.extend
 		$el: $('#target-date').on('change', ->
