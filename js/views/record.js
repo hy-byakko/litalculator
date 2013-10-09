@@ -11,8 +11,7 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       'click button.close': 'removeRecord'
     },
     initialize: function() {
-      this.listenTo(this.model, 'sync', this.render);
-      return this.listenTo(this.model, 'destroy', this.remove);
+      return this.listenTo(this.model.collection, 'write', this.render);
     },
     indexBarTemplate: _.template('\
 <td class="editable" data-prop="category"><%= model.categoryName() || "-" %></td>\
@@ -75,7 +74,8 @@ define(['jquery', 'underscore', 'backbone', 'common'], function($, _, Backbone, 
       var collection;
       collection = this.model.collection;
       collection.remove(this.model);
-      return collection.trigger('write');
+      collection.trigger('write');
+      return this.remove();
     }
   });
 });

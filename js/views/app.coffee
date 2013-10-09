@@ -4,11 +4,10 @@ define [
 	'backbone'
 	'models/record'
 	'models/recordcontainer'
-	'collections/records'
 	'collections/recordcontainers'
 	'views/record'
 	'common'
-], ($, _, Backbone, Record, RecordContainer, Records, RecordContainers, RecordView, Common) ->
+], ($, _, Backbone, Record, RecordContainer, RecordContainers, RecordView, Common) ->
 	'use strict'
 
 	Backbone.View.extend
@@ -24,7 +23,7 @@ define [
 			@$resultBody = @$('#result ul.list-group')
 
 			@recordContainers = new RecordContainers
-			@records = new Records
+			@records = @recordContainers.records
 
 			calculateWarp = _.debounce(@calculateRender, 5, false)
 
@@ -35,17 +34,8 @@ define [
 			@listenTo @records, 'add', @renderOne
 			@listenTo @records, 'all', calculateWarp
 			@listenTo @records, 'reset', @render
-			@listenTo @records, 'write', @recordsUpdate
 
-			@listenTo @recordContainers, 'sync', @recordsFetch
-
-			Common.targetDate.$el.trigger('change')
-
-		recordsFetch: ->
-			@records.reset(JSON.parse(@recordContainers.getContainer().get('content')))
-
-		recordsUpdate: ->
-			@recordContainers.getContainer().set('content', JSON.stringify(@records.toJSON())).set('lastModifyTime', (new Date).toString()).save()
+			# Common.targetDate.$el.trigger('change')
 
 		render: ->
 			do @$recordsBody.empty

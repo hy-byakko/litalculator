@@ -17,8 +17,7 @@ define [
 			'click button.close': 'removeRecord'
 
 		initialize: ->
-			@listenTo @model, 'sync', @render
-			@listenTo @model, 'destroy', @remove
+			@listenTo @model.collection, 'write', @render
 
 		indexBarTemplate: _.template '
 <td class="editable" data-prop="category"><%= model.categoryName() || "-" %></td>
@@ -73,3 +72,4 @@ define [
 			collection = @model.collection
 			collection.remove(@model)
 			collection.trigger('write')
+			do @remove

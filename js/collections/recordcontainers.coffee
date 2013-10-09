@@ -3,10 +3,11 @@ define [
 	'underscore'
 	'backbone'
 	'models/recordcontainer'
+	'collections/records'
 	'common'
 	'moment'
 	'backbone.indexedDB'
-], ($, _, Backbone, RecordContainer, Common, moment) ->
+], ($, _, Backbone, RecordContainer, Records, Common, moment) ->
 	'use strict'
 
 	Backbone.Collection.extend
@@ -14,9 +15,13 @@ define [
 
 		store: new Backbone.IndexedDB.Store 'recordContainers'
 
+		# TODO Glodal event
 		initialize: ->
-			# @listenTo Common.targetDate, 'change', =>
-			# 	@trigger('filter')
+			@records = new Records
+
+			@listenTo @records, 'write', @recordsUpdate
+			@listenTo Common.targetDate, 'change', =>
+				do @recordsFetch
 			@
 
 		# TODO Cache container
@@ -29,3 +34,12 @@ define [
 			@add(container)
 			container.save()
 			container
+
+		recordsUpdate: ->
+			container = @getContainer()
+			container.set('content', JSON.stringify(@records.toJSON()))
+			container.set('lastModifyTime', (new Date).toString())
+			container.save()
+
+		recordsFetch: ->
+			@records.reset(JSON.parse(@getContainer().get('content')))
