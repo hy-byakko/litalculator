@@ -7,7 +7,8 @@ define [
 	'collections/recordcontainers'
 	'views/record'
 	'common'
-], ($, _, Backbone, Record, RecordContainer, RecordContainers, RecordView, Common) ->
+	'eventmgr'
+], ($, _, Backbone, Record, RecordContainer, RecordContainers, RecordView, Common, eventManager) ->
 	'use strict'
 
 	Backbone.View.extend
@@ -27,15 +28,12 @@ define [
 
 			calculateWarp = _.debounce(@calculateRender, 5, false)
 
-			do @recordContainers.fetch
-			# Fetch before listen to prevent rendering
-			# do @records.fetch
+			@recordContainers.fetch().done ->
+				eventManager.trigger('reccntrsready')
 
 			@listenTo @records, 'add', @renderOne
 			@listenTo @records, 'all', calculateWarp
 			@listenTo @records, 'reset', @render
-
-			# Common.targetDate.$el.trigger('change')
 
 		render: ->
 			do @$recordsBody.empty

@@ -2,32 +2,16 @@ define [
 	'underscore'
 	'backbone'
 	'moment'
-	'Dropbox'
+	'dropboxprovider'
 	'eventmgr'
 	'jQuery.indexedDB'
-], (_, Backbone, moment, Dropbox, eventManager) ->
+], (_, Backbone, moment, DropboxProvider, eventManager) ->
 	'use strict'
 
 	selectExpend = (element) ->
 		event = document.createEvent('MouseEvents')
 		event.initMouseEvent('mousedown', true, true, window)
 		element.dispatchEvent(event)
-
-	client = new Dropbox.Client key: 't35la3qyv5bvtry'
-	client.authDriver new Dropbox.AuthDriver.Popup
-	    receiverUrl: "http://localhost:4000/dropbox-oauth-receiver.html"
-	    rememberUser: true
-
-	client.authenticate
-		interactive: false
-	, (error) ->
-        alert('Authentication error: ' + error) if error
-
-	client.isAuthenticated()
-
-	# datastoreManager = do client.getDatastoreManager
-	# datastoreManager.openDefaultDatastore (error, datastore) ->
-	#     alert('Error opening default datastore: ' + error) if error
 
 	defaultMetaData =
 	categories: [
@@ -135,7 +119,6 @@ define [
 			text: '陈国伟', value: 4
 		}
 	]
-	lastModify: new Date "Sat, 28 Sep 2013 15:22:33 GMT"
 
 	metaData = {}
 
@@ -150,20 +133,25 @@ define [
 				metaData = result
 				eventManager.trigger('metaready')
 
-	targetDate = _.extend
+	targetDate =
 		$el: $('#target-date').on('change', ->
 			return unless targetDate.$el.val()
 			targetDate.date = moment(targetDate.$el.val()).toDate()
-			targetDate.trigger('change', targetDate.date)
+			eventManager.trigger('change', targetDate.date)
 		).val(moment().format("YYYY-MM-DD"))
-		,
-		Backbone.Events
 
-	new class
+	eventManager.on 'appready', ->
+		targetDate.$el.trigger('change')
+
+	$('#dropbox-login').on('click', ->
+		do DropboxProvider.client.authenticate
+	)
+
+	common = new class Common
 		getCategories: =>
-			defaultMetaData.categories
+			metaData.categories
 		getCategory: (value) =>
-			_.findWhere defaultMetaData.categories, value: value
+			_.findWhere metaData.categories, value: value
 		getDetails: (categoryValue) =>
 			(@getCategory(categoryValue) or {}).details
 		getDetail: (categoryValue, detailValue) =>
@@ -171,8 +159,16 @@ define [
 			return unless details
 			_.findWhere details, value: detailValue
 		getWorkers: =>
-			defaultMetaData.workers
+			metaData.workers
 		getWorker: (value) =>
-			_.findWhere defaultMetaData.workers, value: value
+			_.findWhere metaData.workers, value: value
 		targetDate: targetDate
 		selectExpend: selectExpend
+		onLineState: navigator.onLine
+
+	eventManager.on 'online', ->
+		common.onLineState = 'online'
+	eventManager.on 'offline', ->
+		common.onLineState = 'offline'
+
+	common

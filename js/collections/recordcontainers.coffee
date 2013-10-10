@@ -5,9 +5,10 @@ define [
 	'models/recordcontainer'
 	'collections/records'
 	'common'
+	'eventmgr'
 	'moment'
 	'backbone.indexedDB'
-], ($, _, Backbone, RecordContainer, Records, Common, moment) ->
+], ($, _, Backbone, RecordContainer, Records, Common, eventManager, moment) ->
 	'use strict'
 
 	Backbone.Collection.extend
@@ -20,8 +21,14 @@ define [
 			@records = new Records
 
 			@listenTo @records, 'write', @recordsUpdate
-			@listenTo Common.targetDate, 'change', =>
+			@listenTo eventManager, 'change', =>
 				do @recordsFetch
+			@listenTo eventManager, 'remotesync', =>
+				console.log 'a'
+			@listenTo @, 'all', =>
+				console.log arguments
+			@listenTo @records, 'all', =>
+				console.log arguments
 			@
 
 		# TODO Cache container
