@@ -1,0 +1,18 @@
+{
+	"folders":
+    [
+        {
+            "path": ".",
+            "folder_exclude_patterns": [
+            	"_site",
+                "js/lib",
+                "css/bootstrap",
+                "css/messenger",
+                "css/scrollup"
+            ],
+            "file_exclude_patterns": [
+            	"js/require.js"
+            ]
+        }
+    ]
+}
