@@ -23,15 +23,21 @@ define [
 
 			@listenTo @records, 'write', @recordsUpdate
 			@listenTo eventManager, 'change', =>
-				DropboxProvider.datastoreManager.openDefaultDatastore (error, datastore) =>
-					@remoteStore = datastore.getTable('recordContainers')
-					do @recordsFetch
+				do @recordsFetch
+				DropboxProvider.getStore().done (store) =>
+					remoteCntrs = store.getTable('recordContainers')
 
 					localCntr = do @getContainer
-					remoteCntr = @remoteStore.getOrInsert(localCntr.id.toString(), localCntr.toRemoteFormat())
-					unless remoteCntr.has('lastModifyTime') and !moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))
-						remoteCntr.update localCntr.toRemoteFormat()
-						localCntr.set('lastSyncTime', new Date)
+					remoteCntr = remoteCntrs.query(
+						contentTime: localCntr.get('contentTime')
+					)[0]
+					if !remoteCntr
+						remoteCntrs.insert localCntr.toRemoteFormat()
+					else if !moment(remoteCntr.get('createTime')).isSame(localCntr.get('createTime')) or moment(remoteCntr.get('lastModifyTime')).isAfter(localCntr.get('lastModifyTime'))
+						localCntr.fetchRemote(remoteCntr.getFields())
+						do @recordsFetch
+					else if moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))
+							remoteCntr.update localCntr.toRemoteFormat()
 
 			# @listenTo eventManager, 'remotesync', =>
 			# 	console.log 'a'

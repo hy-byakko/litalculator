@@ -1,7 +1,9 @@
 define [
+	'jquery'
+	'underscore'
 	'Dropbox'
 	'eventmgr'
-], (Dropbox, eventManager) ->
+], ($, _, Dropbox, eventManager) ->
 	client = new Dropbox.Client key: 't35la3qyv5bvtry'
 	client.authDriver new Dropbox.AuthDriver.Popup
 	    receiverUrl: "http://localhost:4000/dropbox-oauth-receiver.html"
@@ -14,12 +16,21 @@ define [
 
 	if client.isAuthenticated()
 		eventManager.trigger('remotesync')
-		datastoreManager = do client.getDatastoreManager
-		datastoreManager.openDefaultDatastore (error, datastore) ->
-			console.log('Error opening default datastore: ' + error) if error
-			taskTable = datastore.getTable('metaData')
-			results = taskTable.get '1'
 
 	class DropboxProvider
 		@client: client
-		@datastoreManager = datastoreManager
+		@getStore: ->
+			$.Deferred (deferred) =>
+				return deferred.resolve(@store) if @store
+				client.getDatastoreManager().openDefaultDatastore (error, datastore) =>
+					if error
+						console.log('Error opening default datastore: ' + error)
+						deferred.reject(error)
+					else
+						@store = datastore
+						deferred.resolve(@store)
+		@cleanTable: (name) ->
+			@getStore().done (store) ->
+				records = store.getTable(name).query()
+				_.each records, (record) ->
+					do record.deleteRecord

@@ -9,15 +9,21 @@ define(['jquery', 'underscore', 'backbone', 'models/recordcontainer', 'collectio
       this.records = new Records;
       this.listenTo(this.records, 'write', this.recordsUpdate);
       this.listenTo(eventManager, 'change', function() {
-        return DropboxProvider.datastoreManager.openDefaultDatastore(function(error, datastore) {
-          var localCntr, remoteCntr;
-          _this.remoteStore = datastore.getTable('recordContainers');
-          _this.recordsFetch();
+        _this.recordsFetch();
+        return DropboxProvider.getStore().done(function(store) {
+          var localCntr, remoteCntr, remoteCntrs;
+          remoteCntrs = store.getTable('recordContainers');
           localCntr = _this.getContainer();
-          remoteCntr = _this.remoteStore.getOrInsert(localCntr.id.toString(), localCntr.toRemoteFormat());
-          if (!(remoteCntr.has('lastModifyTime') && !moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime')))) {
-            remoteCntr.update(localCntr.toRemoteFormat());
-            return localCntr.set('lastSyncTime', new Date);
+          remoteCntr = remoteCntrs.query({
+            contentTime: localCntr.get('contentTime')
+          })[0];
+          if (!remoteCntr) {
+            return remoteCntrs.insert(localCntr.toRemoteFormat());
+          } else if (!moment(remoteCntr.get('createTime')).isSame(localCntr.get('createTime')) || moment(remoteCntr.get('lastModifyTime')).isAfter(localCntr.get('lastModifyTime'))) {
+            localCntr.fetchRemote(remoteCntr.getFields());
+            return _this.recordsFetch();
+          } else if (moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))) {
+            return remoteCntr.update(localCntr.toRemoteFormat());
           }
         });
       });

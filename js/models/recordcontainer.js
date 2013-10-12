@@ -6,7 +6,6 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
       return {
         createTime: new Date,
         lastModifyTime: new Date,
-        lastSyncTime: void 0,
         contentTime: void 0,
         content: []
       };
@@ -15,7 +14,12 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
       var recCntr;
       recCntr = this.toJSON();
       recCntr.content = JSON.stringify(recCntr.content);
+      delete recCntr.id;
       return recCntr;
+    },
+    fetchRemote: function(recCntr) {
+      recCntr.content = JSON.parse(recCntr.content);
+      return this.save(recCntr);
     }
   });
 });

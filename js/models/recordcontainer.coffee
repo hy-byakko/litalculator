@@ -9,11 +9,15 @@ define [
 		defaults: ->
 			createTime: new Date
 			lastModifyTime: new Date
-			lastSyncTime: undefined
 			contentTime: undefined
 			content: []
 
 		toRemoteFormat: ->
 			recCntr = @toJSON()
 			recCntr.content = JSON.stringify recCntr.content
+			delete recCntr.id
 			recCntr
+
+		fetchRemote: (recCntr) ->
+			recCntr.content = JSON.parse recCntr.content
+			@save(recCntr)
