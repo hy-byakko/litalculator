@@ -7,11 +7,13 @@ define [
 
 	Backbone.Model.extend
 		defaults: ->
-			createTime: (new Date).toString()
-			lastModifyTime: (new Date).toString()
+			createTime: new Date
+			lastModifyTime: new Date
 			lastSyncTime: undefined
 			contentTime: undefined
-			content: JSON.stringify []
+			content: []
 
-		getTime: (name) ->
-			new Date(@get(name))
+		toRemoteFormat: ->
+			recCntr = @toJSON()
+			recCntr.content = JSON.stringify recCntr.content
+			recCntr

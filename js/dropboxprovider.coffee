@@ -13,7 +13,6 @@ define [
         alert('Authentication error: ' + error) if error
 
 	if client.isAuthenticated()
-		console.log 'b'
 		eventManager.trigger('remotesync')
 		datastoreManager = do client.getDatastoreManager
 		datastoreManager.openDefaultDatastore (error, datastore) ->

@@ -72,11 +72,20 @@ define(['jquery', 'underscore', 'backbone', 'jQuery.indexedDB'], function($, _, 
     };
 
     Store.prototype.saveChanges = function(model, options) {
-      if (model.id !== void 0) {
-        return this.getStore().put(model.toJSON(), model.id);
-      } else {
-        return this.getStore().add(model.toJSON());
-      }
+      var _this = this;
+      return $.Deferred(function(deferred) {
+        var resp;
+        resp = model.id !== void 0 ? _this.getStore().put(model.toJSON(), model.id) : _this.getStore().add(model.toJSON());
+        return resp.done(function(key) {
+          return _this.getStore().get(key).done(function(result, event) {
+            return deferred.resolve($.extend(_.object([model.idAttribute || 'id'], [key]), result), event);
+          }).fail(function(error, event) {
+            return deferred.reject(error, event);
+          });
+        }).fail(function(error, event) {
+          return deferred.reject(error, event);
+        });
+      });
     };
 
     Store.prototype.destroy = function(model, options) {

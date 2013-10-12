@@ -16,7 +16,6 @@ define(['Dropbox', 'eventmgr'], function(Dropbox, eventManager) {
     }
   });
   if (client.isAuthenticated()) {
-    console.log('b');
     eventManager.trigger('remotesync');
     datastoreManager = client.getDatastoreManager();
     datastoreManager.openDefaultDatastore(function(error, datastore) {

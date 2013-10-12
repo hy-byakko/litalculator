@@ -59,12 +59,21 @@ define [
 				count
 			] else resources
 
-		# TODO: Add response
 		saveChanges: (model, options) ->
-			if model.id != undefined
-				@getStore().put model.toJSON(), model.id
-			else
-				@getStore().add model.toJSON()
+			$.Deferred (deferred) =>
+				resp = if model.id != undefined then @getStore().put model.toJSON(), model.id else @getStore().add model.toJSON()
+
+				resp.done (key) =>
+					@getStore().get(key).done (result, event) =>
+						deferred.resolve($.extend((_.object [
+							model.idAttribute or 'id'
+						], [
+							key
+						]), result), event)
+					.fail (error, event) =>
+						deferred.reject(error, event)
+				.fail (error, event) =>
+					deferred.reject(error, event)
 
 		destroy: (model, options) ->
 			if model.id

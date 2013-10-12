@@ -4,15 +4,18 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
   return Backbone.Model.extend({
     defaults: function() {
       return {
-        createTime: (new Date).toString(),
-        lastModifyTime: (new Date).toString(),
+        createTime: new Date,
+        lastModifyTime: new Date,
         lastSyncTime: void 0,
         contentTime: void 0,
-        content: JSON.stringify([])
+        content: []
       };
     },
-    getTime: function(name) {
-      return new Date(this.get(name));
+    toRemoteFormat: function() {
+      var recCntr;
+      recCntr = this.toJSON();
+      recCntr.content = JSON.stringify(recCntr.content);
+      return recCntr;
     }
   });
 });
