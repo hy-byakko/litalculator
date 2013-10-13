@@ -136,10 +136,11 @@ define(['jquery', 'underscore', 'backbone', 'jQuery.indexedDB'], function($, _, 
         return syncDfd.reject(error);
       });
     } else {
-      errorMessage = errorMessage ? errorMessage || "Record Not Found" : void 0;
+      errorMessage = errorMessage ? errorMessage : "Record Not Found";
       if (options && options.error) {
         options.error(errorMessage);
       }
+      console.log(errorMessage);
       syncDfd.reject(errorMessage);
     }
     return syncDfd.promise();

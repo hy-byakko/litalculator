@@ -109,9 +109,10 @@ define [
 					options.error(error)
 				syncDfd.reject(error)
 		else
-			errorMessage = if errorMessage then errorMessage or "Record Not Found"
+			errorMessage = if errorMessage then errorMessage else "Record Not Found"
 			if (options and options.error)
 				options.error(errorMessage)
+			console.log errorMessage
 			syncDfd.reject(errorMessage)
 
 		syncDfd.promise()

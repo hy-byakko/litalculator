@@ -11,47 +11,63 @@ define(['jquery', 'underscore', 'backbone', 'models/recordcontainer', 'collectio
       this.listenTo(eventManager, 'change', function() {
         _this.recordsFetch();
         return DropboxProvider.getStore().done(function(store) {
-          var localCntr, remoteCntr, remoteCntrs;
+          var remoteCntrs;
           remoteCntrs = store.getTable('recordContainers');
-          localCntr = _this.getContainer();
-          remoteCntr = remoteCntrs.query({
-            contentTime: localCntr.get('contentTime')
-          })[0];
-          if (!remoteCntr) {
-            return remoteCntrs.insert(localCntr.toRemoteFormat());
-          } else if (!moment(remoteCntr.get('createTime')).isSame(localCntr.get('createTime')) || moment(remoteCntr.get('lastModifyTime')).isAfter(localCntr.get('lastModifyTime'))) {
-            localCntr.fetchRemote(remoteCntr.getFields());
-            return _this.recordsFetch();
-          } else if (moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))) {
-            return remoteCntr.update(localCntr.toRemoteFormat());
-          }
+          return _this.getContainer('remote').done(function(localCntr) {
+            var remoteCntr;
+            remoteCntr = remoteCntrs.query({
+              contentTime: localCntr.get('contentTime')
+            })[0];
+            if (!remoteCntr) {
+              return remoteCntrs.insert(localCntr.toRemoteFormat());
+            } else if (!moment(remoteCntr.get('createTime')).isSame(localCntr.get('createTime')) || moment(remoteCntr.get('lastModifyTime')).isAfter(localCntr.get('lastModifyTime'))) {
+              localCntr.fetchRemote(remoteCntr.getFields());
+              return _this.recordsFetch();
+            } else if (moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))) {
+              return remoteCntr.update(localCntr.toRemoteFormat());
+            }
+          });
         });
       });
       return this;
     },
     getContainer: function() {
-      var container;
+      var container, defer;
+      defer = $.Deferred();
       container = this.find(function(container) {
         return moment(container.get('contentTime')).isSame(Common.targetDate.date);
       });
       if (container) {
-        return container;
+        if (container.id) {
+          defer.resolve(container);
+        } else {
+          this.listenToOnce(container, 'sync', function() {
+            return defer.resolve(container);
+          });
+        }
+      } else {
+        container = new RecordContainer;
+        container.set('contentTime', Common.targetDate.date);
+        this.add(container);
+        container.save().done(function() {
+          return defer.resolve(container);
+        });
       }
-      container = new RecordContainer;
-      container.set('contentTime', Common.targetDate.date);
-      this.add(container);
-      container.save();
-      return container;
+      return defer.promise();
     },
     recordsUpdate: function() {
-      var container;
-      container = this.getContainer();
-      container.set('content', this.records.toJSON());
-      container.set('lastModifyTime', new Date);
-      return container.save();
+      var _this = this;
+      return this.getContainer('update').done(function(container) {
+        container.set('content', _this.records.toJSON());
+        container.set('lastModifyTime', new Date);
+        return container.save();
+      });
     },
     recordsFetch: function() {
-      return this.records.reset(this.getContainer().get('content'));
+      var _this = this;
+      return this.getContainer('fetch').done(function(container) {
+        return _this.records.reset(container.get('content'));
+      });
     }
   });
 });
