@@ -2,7 +2,9 @@ define [
 	'jquery'
 	'underscore'
 	'backbone'
-], ($, _, Backbone) ->
+	'moment'
+	'dropboxprovider'
+], ($, _, Backbone, moment, DropboxProvider) ->
 	'use strict'
 
 	Backbone.Model.extend
@@ -11,6 +13,37 @@ define [
 			lastModifyTime: new Date
 			contentTime: undefined
 			content: []
+
+		remote:
+			table: 'recordContainers'
+			key: 'contentTime'
+
+		remoteSync: ->
+			defer = do $.Deferred
+
+			DropboxProvider.getStore().done (store) =>
+				remoteRecs = store.getTable(@remote.table)
+				remoteRec = remoteRecs.query(_.object([
+						@remote.key
+					], [
+						@get(@remote.key)
+					]
+				))[0]
+				if !remoteRec
+					remoteRecs.insert @toRemoteFormat()
+					defer.resolve @, new Event('remotecreate')
+				else if !moment(remoteRec.get('createTime')).isSame(@get('createTime')) or moment(remoteRec.get('lastModifyTime')).isAfter(@get('lastModifyTime'))
+					console.log 'localupdate'
+					@fetchRemote(remoteRec.getFields())
+					defer.resolve @, new Event('localupdate')
+				else if moment(remoteRec.get('lastModifyTime')).isBefore(@get('lastModifyTime'))
+					console.log 'remoteupdate'
+					defer.resolve @, new Event('remoteupdate')
+					remoteRec.update @toRemoteFormat()
+				else
+					defer.resolve @, new Event('uptodate')
+
+			do defer.promise
 
 		toRemoteFormat: ->
 			recCntr = @toJSON()

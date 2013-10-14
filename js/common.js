@@ -132,9 +132,6 @@ define(['underscore', 'backbone', 'moment', 'dropboxprovider', 'eventmgr', 'jQue
   eventManager.on('appready', function() {
     return targetDate.$el.trigger('change');
   });
-  $('#dropbox-login').on('click', function() {
-    return DropboxProvider.client.authenticate();
-  });
   common = new (Common = (function() {
     function Common() {
       this.getWorker = __bind(this.getWorker, this);

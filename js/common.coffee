@@ -143,10 +143,6 @@ define [
 	eventManager.on 'appready', ->
 		targetDate.$el.trigger('change')
 
-	$('#dropbox-login').on('click', ->
-		do DropboxProvider.client.authenticate
-	)
-
 	common = new class Common
 		getCategories: =>
 			metaData.categories

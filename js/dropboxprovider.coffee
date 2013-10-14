@@ -14,8 +14,33 @@ define [
 	, (error) ->
         alert('Authentication error: ' + error) if error
 
+	$view =	$('#dropbox-view')
+
+	$login = $view.children('#dropbox-login').on('click', ->
+		do DropboxProvider.client.authenticate
+	)
+	$sync = $view.children('#dropbox-sync')
+	$signOut = $view.children('#dropbox-signout').on 'click', ->
+		DropboxProvider.client.signOut undefined, ->
+			signState(false)
+
+	signState = (signIn) ->
+		if signIn
+			do $login.hide
+			do $sync.show
+			do $signOut.show
+		else
+			do $login.show
+			do $sync.hide
+			do $signOut.hide
+
 	if client.isAuthenticated()
 		eventManager.trigger('remotesync')
+		signState(true)
+	else
+		signState(false)
+
+	do $view.show
 
 	class DropboxProvider
 		@client: client
@@ -29,6 +54,8 @@ define [
 					else
 						@store = datastore
 						deferred.resolve(@store)
+		@closeStore: ->
+			do store.close if @store
 		@cleanTable: (name) ->
 			@getStore().done (store) ->
 				records = store.getTable(name).query()

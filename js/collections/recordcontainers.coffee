@@ -5,17 +5,47 @@ define [
 	'models/recordcontainer'
 	'collections/records'
 	'common'
-	'dropboxprovider'
 	'eventmgr'
-	'moment'
 	'backbone.indexedDB'
-], ($, _, Backbone, RecordContainer, Records, Common, DropboxProvider, eventManager, moment) ->
+], ($, _, Backbone, RecordContainer, Records, Common, eventManager, moment) ->
 	'use strict'
 
 	Backbone.Collection.extend
 		model: RecordContainer
 
 		store: new Backbone.IndexedDB.Store 'recordContainers'
+
+		remoteSync: ->
+			@getLocal().done (localRec) =>
+				# Do not really need call recordsFetch again when remote store already exist. It will update record before render it.
+				localRec.remoteSync().done (rec, evt) =>
+					@recordsFetch() if evt.type == 'localupdate'
+
+		getLocal: () ->
+			@getOrCreate
+				contentTime: Common.targetDate.date
+
+		getOrCreate: (filter) ->
+			defer = do $.Deferred
+
+			record = @find (rec) ->
+				_.every filter, (val, prop) ->
+					_.isEqual(rec.get(prop), val)
+
+			if record
+				if record.id
+					defer.resolve record
+				else
+					@listenToOnce record, 'change:id', ->
+						defer.resolve record
+			else
+				record = new @model
+				record.set(filter)
+				@add(record)
+				record.save().done ->
+					defer.resolve record
+
+			do defer.promise
 
 		# TODO Glodal event
 		initialize: ->
@@ -24,22 +54,7 @@ define [
 			@listenTo @records, 'write', @recordsUpdate
 			@listenTo eventManager, 'change', =>
 				do @recordsFetch
-
-				DropboxProvider.getStore().done (store) =>
-					remoteCntrs = store.getTable('recordContainers')
-
-					@getContainer('remote').done (localCntr) =>
-						remoteCntr = remoteCntrs.query(
-							contentTime: localCntr.get('contentTime')
-						)[0]
-						if !remoteCntr
-							remoteCntrs.insert localCntr.toRemoteFormat()
-						else if !moment(remoteCntr.get('createTime')).isSame(localCntr.get('createTime')) or moment(remoteCntr.get('lastModifyTime')).isAfter(localCntr.get('lastModifyTime'))
-							localCntr.fetchRemote(remoteCntr.getFields())
-							do @recordsFetch
-						else if moment(remoteCntr.get('lastModifyTime')).isBefore(localCntr.get('lastModifyTime'))
-								remoteCntr.update localCntr.toRemoteFormat()
-
+				do @remoteSync
 			# @listenTo eventManager, 'remotesync', =>
 			# 	console.log 'a'
 			# @listenTo @, 'all', =>
@@ -48,33 +63,13 @@ define [
 			# 	console.log arguments
 			@
 
-		# TODO Cache container
-		getContainer: ->
-			defer = do $.Deferred
-
-			container = @find (container) ->
-				moment(container.get('contentTime')).isSame(Common.targetDate.date)
-			if container
-				if container.id
-					defer.resolve container
-				else
-					@listenToOnce container, 'sync', ->
-						defer.resolve container
-			else
-				container = new RecordContainer
-				container.set('contentTime', Common.targetDate.date)
-				@add(container)
-				container.save().done ->
-					defer.resolve container
-
-			do defer.promise
-
 		recordsUpdate: ->
-			@getContainer('update').done (container) =>
+			@getLocal().done (container) =>
 				container.set('content', @records.toJSON())
 				container.set('lastModifyTime', new Date)
-				container.save()
+				container.save().done =>
+					container.remoteSync()
 
 		recordsFetch: ->
-			@getContainer('fetch').done (container) =>
+			@getLocal().done (container) =>
 				@records.reset(container.get('content'))
