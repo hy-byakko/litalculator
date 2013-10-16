@@ -16,9 +16,10 @@ define [
 
 	$view =	$('#dropbox-view')
 
-	$login = $view.children('#dropbox-login').on('click', ->
-		do DropboxProvider.client.authenticate
-	)
+	$login = $view.children('#dropbox-login').on 'click', ->
+		DropboxProvider.client.authenticate undefined, ->
+			signState(true)
+
 	$sync = $view.children('#dropbox-sync')
 	$signOut = $view.children('#dropbox-signout').on 'click', ->
 		DropboxProvider.client.signOut undefined, ->
@@ -27,11 +28,9 @@ define [
 	signState = (signIn) ->
 		if signIn
 			do $login.hide
-			do $sync.show
 			do $signOut.show
 		else
 			do $login.show
-			do $sync.hide
 			do $signOut.hide
 
 	if client.isAuthenticated()
@@ -44,6 +43,8 @@ define [
 
 	class DropboxProvider
 		@client: client
+		@available: ->
+			do @client.isAuthenticated
 		@getStore: ->
 			$.Deferred (deferred) =>
 				return deferred.resolve(@store) if @store

@@ -17,7 +17,9 @@ define(['jquery', 'underscore', 'Dropbox', 'eventmgr'], function($, _, Dropbox, 
   });
   $view = $('#dropbox-view');
   $login = $view.children('#dropbox-login').on('click', function() {
-    return DropboxProvider.client.authenticate();
+    return DropboxProvider.client.authenticate(void 0, function() {
+      return signState(true);
+    });
   });
   $sync = $view.children('#dropbox-sync');
   $signOut = $view.children('#dropbox-signout').on('click', function() {
@@ -28,11 +30,9 @@ define(['jquery', 'underscore', 'Dropbox', 'eventmgr'], function($, _, Dropbox, 
   signState = function(signIn) {
     if (signIn) {
       $login.hide();
-      $sync.show();
       return $signOut.show();
     } else {
       $login.show();
-      $sync.hide();
       return $signOut.hide();
     }
   };
@@ -47,6 +47,10 @@ define(['jquery', 'underscore', 'Dropbox', 'eventmgr'], function($, _, Dropbox, 
     function DropboxProvider() {}
 
     DropboxProvider.client = client;
+
+    DropboxProvider.available = function() {
+      return this.client.isAuthenticated();
+    };
 
     DropboxProvider.getStore = function() {
       var _this = this;

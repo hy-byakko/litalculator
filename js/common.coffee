@@ -2,10 +2,9 @@ define [
 	'underscore'
 	'backbone'
 	'moment'
-	'dropboxprovider'
 	'eventmgr'
 	'jQuery.indexedDB'
-], (_, Backbone, moment, DropboxProvider, eventManager) ->
+], (_, Backbone, moment, eventManager) ->
 	'use strict'
 
 	selectExpend = (element) ->

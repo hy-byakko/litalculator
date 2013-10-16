@@ -47,7 +47,6 @@ define [
 
 			do defer.promise
 
-		# TODO Glodal event
 		initialize: ->
 			@records = new Records
 
