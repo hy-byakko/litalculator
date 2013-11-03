@@ -25,28 +25,6 @@ define [
 			@getOrCreate
 				contentTime: Common.targetDate.date
 
-		getOrCreate: (filter) ->
-			defer = do $.Deferred
-
-			record = @find (rec) ->
-				_.every filter, (val, prop) ->
-					_.isEqual(rec.get(prop), val)
-
-			if record
-				if record.id
-					defer.resolve record
-				else
-					@listenToOnce record, 'change:id', ->
-						defer.resolve record
-			else
-				record = new @model
-				record.set(filter)
-				@add(record)
-				record.save().done ->
-					defer.resolve record
-
-			do defer.promise
-
 		initialize: ->
 			@records = new Records
 
@@ -65,7 +43,7 @@ define [
 		recordsUpdate: ->
 			@getLocal().done (container) =>
 				container.set('content', @records.toJSON())
-				container.set('lastModifyTime', new Date)
+				container.set('modifyTime', new Date)
 				container.save().done =>
 					container.remoteSync()
 

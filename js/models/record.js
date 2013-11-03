@@ -4,8 +4,7 @@ define(['jquery', 'underscore', 'backbone', 'moment', 'common'], function($, _, 
   return Backbone.Model.extend({
     defaults: function() {
       return {
-        worker: 0,
-        createTime: Common.targetDate.date
+        worker: 0
       };
     },
     categoryName: function() {
@@ -22,9 +21,6 @@ define(['jquery', 'underscore', 'backbone', 'moment', 'common'], function($, _, 
     },
     isValid: function() {
       return this.getNum() && !_.isUndefined(Common.getDetail(this.get('category'), this.get('detail')));
-    },
-    isActived: function() {
-      return moment(this.get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'));
     },
     setNum: function(value) {
       var e, evalVal;

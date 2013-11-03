@@ -40,9 +40,6 @@ require [
 	'jQuery.scrollUp'
 	'backbone.indexedDB'
 ], ($, Backbone, appView, Messenger) ->
-
-	Backbone.IndexedDB.DBName = 'litalculator'
-
 	$.scrollUp
 		scrollDistance: 1
 		scrollImg: true

@@ -19,32 +19,6 @@ define(['jquery', 'underscore', 'backbone', 'models/recordcontainer', 'collectio
         contentTime: Common.targetDate.date
       });
     },
-    getOrCreate: function(filter) {
-      var defer, record;
-      defer = $.Deferred();
-      record = this.find(function(rec) {
-        return _.every(filter, function(val, prop) {
-          return _.isEqual(rec.get(prop), val);
-        });
-      });
-      if (record) {
-        if (record.id) {
-          defer.resolve(record);
-        } else {
-          this.listenToOnce(record, 'change:id', function() {
-            return defer.resolve(record);
-          });
-        }
-      } else {
-        record = new this.model;
-        record.set(filter);
-        this.add(record);
-        record.save().done(function() {
-          return defer.resolve(record);
-        });
-      }
-      return defer.promise();
-    },
     initialize: function() {
       var _this = this;
       this.records = new Records;
@@ -59,7 +33,7 @@ define(['jquery', 'underscore', 'backbone', 'models/recordcontainer', 'collectio
       var _this = this;
       return this.getLocal().done(function(container) {
         container.set('content', _this.records.toJSON());
-        container.set('lastModifyTime', new Date);
+        container.set('modifyTime', new Date);
         return container.save().done(function() {
           return container.remoteSync();
         });

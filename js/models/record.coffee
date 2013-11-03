@@ -10,7 +10,6 @@ define [
 	Backbone.Model.extend
 		defaults: ->
 			worker: 0
-			createTime: Common.targetDate.date
 
 		categoryName: ->
 			(Common.getCategory(@get('category')) or {}).text
@@ -22,8 +21,6 @@ define [
 			!_.isUndefined @get("category")
 		isValid: ->
 			@getNum() and !_.isUndefined(Common.getDetail(@get('category'), @get('detail')))
-		isActived: ->
-			moment(@get('createTime')).startOf('day').isSame(moment(Common.targetDate.date).startOf('day'))
 		setNum: (value) ->
 			if /^\d+$/.test value
 				@set('num', parseInt(value))

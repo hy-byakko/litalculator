@@ -24,9 +24,7 @@ define(['jquery', 'underscore', 'backbone', 'models/record', 'models/recordconta
     render: function() {
       var _this = this;
       this.$recordsBody.empty();
-      this.records.chain().filter(function(record) {
-        return record.isActived();
-      }).each(function(record) {
+      this.records.chain().each(function(record) {
         return _this.renderOne(record);
       }).value();
       return this;
@@ -64,7 +62,7 @@ define(['jquery', 'underscore', 'backbone', 'models/record', 'models/recordconta
     calculate: function() {
       var groupedRecords, records;
       records = this.records.filter(function(record) {
-        return record.isValid() && record.isActived();
+        return record.isValid();
       });
       groupedRecords = _.groupBy(records, function(record) {
         return record.get('worker');

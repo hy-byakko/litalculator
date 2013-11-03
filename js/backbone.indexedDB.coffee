@@ -4,6 +4,29 @@ define [
 	'backbone'
 	'jQuery.indexedDB'
 ], ($, _, Backbone) ->
+	# Extend a method for ensure data being persisted in local db
+	Backbone.Collection.prototype.getOrCreate = (filter) ->
+		defer = do $.Deferred
+
+		record = @find (rec) ->
+			_.every filter, (val, prop) ->
+				_.isEqual(rec.get(prop), val)
+
+		if record
+			if record.id
+				defer.resolve record
+			else
+				@listenToOnce record, 'change:id', ->
+					defer.resolve record
+		else
+			record = new @model
+			record.set(filter)
+			@add(record)
+			record.save().done ->
+				defer.resolve record
+
+		do defer.promise
+
 	Backbone.IndexedDB = class IndexedDB
 		@DBName: 'defaultDB'
 

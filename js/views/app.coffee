@@ -38,8 +38,6 @@ define [
 		render: ->
 			do @$recordsBody.empty
 			@records.chain()
-			.filter (record) ->
-				record.isActived()
 			.each (record) =>
 				@renderOne (record)
 			.value()
@@ -68,7 +66,7 @@ define [
 
 		calculate: ->
 			records = @records.filter (record) ->
-				record.isValid() && record.isActived()
+				record.isValid()
 
 			groupedRecords = _.groupBy records, (record) ->
 				record.get('worker')

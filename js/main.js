@@ -38,7 +38,6 @@ require.config({
 
 require(['jquery', 'backbone', 'views/app', 'messenger', 'bootstrap', 'jQuery.scrollUp', 'backbone.indexedDB'], function($, Backbone, appView, Messenger) {
   var updateOnlineStatus;
-  Backbone.IndexedDB.DBName = 'litalculator';
   $.scrollUp({
     scrollDistance: 1,
     scrollImg: true

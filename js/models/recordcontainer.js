@@ -5,7 +5,7 @@ define(['jquery', 'underscore', 'backbone', 'common', 'dropboxprovider'], functi
     defaults: function() {
       return {
         createTime: new Date,
-        lastModifyTime: new Date,
+        modifyTime: new Date,
         contentTime: void 0,
         content: []
       };
@@ -14,36 +14,6 @@ define(['jquery', 'underscore', 'backbone', 'common', 'dropboxprovider'], functi
       table: 'recordContainers',
       key: 'contentTime'
     },
-    provider: DropboxProvider,
-    remoteSync: function() {
-      var defer,
-        _this = this;
-      defer = $.Deferred();
-      if (this.provider.available()) {
-        this.provider.getStore().done(function(store) {
-          var remoteRec, remoteRecs;
-          remoteRecs = store.getTable(_this.remote.table);
-          remoteRec = remoteRecs.query(_.object([_this.remote.key], [_this.get(_this.remote.key)]))[0];
-          if (!remoteRec) {
-            remoteRecs.insert(_this.toRemoteFormat());
-            return defer.resolve(_this, new Event('remotecreate'));
-          } else if (!moment(remoteRec.get('createTime')).isSame(_this.get('createTime')) || moment(remoteRec.get('lastModifyTime')).isAfter(_this.get('lastModifyTime'))) {
-            console.log('localupdate');
-            _this.fetchRemote(remoteRec.getFields());
-            return defer.resolve(_this, new Event('localupdate'));
-          } else if (moment(remoteRec.get('lastModifyTime')).isBefore(_this.get('lastModifyTime'))) {
-            console.log('remoteupdate');
-            defer.resolve(_this, new Event('remoteupdate'));
-            return remoteRec.update(_this.toRemoteFormat());
-          } else {
-            return defer.resolve(_this, new Event('uptodate'));
-          }
-        });
-      } else {
-        defer.reject(this, new Event('Store is not available.'));
-      }
-      return defer.promise();
-    },
     toRemoteFormat: function() {
       var recCntr;
       recCntr = this.toJSON();
@@ -51,9 +21,9 @@ define(['jquery', 'underscore', 'backbone', 'common', 'dropboxprovider'], functi
       delete recCntr.id;
       return recCntr;
     },
-    fetchRemote: function(recCntr) {
+    toLocalFormat: function(recCntr) {
       recCntr.content = JSON.parse(recCntr.content);
-      return this.save(recCntr);
+      return recCntr;
     }
   });
 });
